@@ -1,4 +1,5 @@
 import { Player } from '../shared/Player.js';
+import { ServerPlayersManager } from './classes/ServerPlayersManager.js';
 
 import express from 'express';
 import http from 'http';
@@ -14,9 +15,6 @@ let app = express();
 let server = http.createServer(app);
 let wss = new WebSocketServer({ server });
 
-/** @type {Map<string, Player>} */
-let players = new Map();
-
 app.use(express.static(path.join(__dirname, '../client')));
 app.use('/shared', express.static(path.join(__dirname, '../shared')));
 
@@ -26,16 +24,11 @@ wss.on('connection', function connection(ws) {
     let y = Math.random() * 400;
     let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
     let player = new Player(id, x, y, color);
-    players.set(id, player);
+    ServerPlayersManager.addPlayer(player);
     ws.id = id;
 
     console.log(`Player joined`);
-
-    let serializedPlayers = {};
-    for (let [id, player] of players) {
-        serializedPlayers[id] = player.dataToSend();
-    }
-    ws.send(JSON.stringify({ type: 'init', id, players: serializedPlayers }));
+    ws.send(JSON.stringify({ type: 'init', id, players: ServerPlayersManager.serializedPlayers() }));
 
     // Notify others of new player
     broadcast({ type: 'player_joined', player });
@@ -44,7 +37,7 @@ wss.on('connection', function connection(ws) {
         console.log(`Incoming message: ` + message);
         let msg = JSON.parse(message);
         if (msg.type === 'move') {
-            let p = players.get(ws.id);
+            let p = ServerPlayersManager.getPlayer(ws.id);
             if (!p) return;
 
             p.move(msg.data.dir);
@@ -54,7 +47,7 @@ wss.on('connection', function connection(ws) {
     });
 
     ws.on('close', function () {
-        players.delete(ws.id);
+        ServerPlayersManager.removePlayer(ws.id);
         broadcast({ type: 'player_left', id: ws.id });
     });
 });
