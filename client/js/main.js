@@ -3,10 +3,10 @@ import { ClientWebSocket } from './ClientWebSocket.js';
 
 let canvas = document.getElementById('game');
 let ctx = canvas.getContext('2d');
+
 ClientWebSocket.startNewSocket();
 
-ClientWebSocket.socket.onmessage = function (event) {
-    console.log(`Received message: ` + event.data);
+ClientWebSocket.on('message', (event) => {
     let msg = JSON.parse(event.data);
 
     switch (msg.type) {
@@ -24,7 +24,7 @@ ClientWebSocket.socket.onmessage = function (event) {
             ClientPlayersManager.updatePlayerCoordinates(msg.id, msg.x, msg.y);
             break;
     }
-};
+})
 
 document.addEventListener('keydown', function (e) {
     let dir = null;
