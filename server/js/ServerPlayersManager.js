@@ -16,14 +16,6 @@ export class ServerPlayersManager {
         return this.players.get(playerID);
     }
 
-    static updatePlayerCoordinates(playerID, x, y) {
-        let updatePlayer = this.players.get(playerID);
-        if (updatePlayer) {
-            updatePlayer.x = x;
-            updatePlayer.y = y;
-        }
-    }
-
     static serializedPlayers() {
         let serializedPlayers = {};
         for (let [id, player] of this.players) {
