@@ -2,14 +2,16 @@ import WebSocket, { WebSocketServer } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { Player } from '../../shared/Player.js';
 import { ServerPlayersManager } from './ServerPlayersManager.js';
+import { IncomingMessage } from './IncomingMessage.js';
+import { IncomingMessageQueue } from './IncomingMessageQueue.js';
 
-export class ServerWebSocket {
+export class ServerWebSockets {
     static wss;
 
     static start(server) {
-        ServerWebSocket.wss = new WebSocketServer({ server });
+        ServerWebSockets.wss = new WebSocketServer({ server });
 
-        ServerWebSocket.wss.on('connection', function connection(ws) {
+        ServerWebSockets.wss.on('connection', function connection(ws) {
             let id = uuidv4();
             let x = Math.random() * 400;
             let y = Math.random() * 400;
@@ -22,31 +24,27 @@ export class ServerWebSocket {
             ws.send(JSON.stringify({ type: 'init', id, players: ServerPlayersManager.serializedPlayers() }));
 
             // Notify others of new player
-            ServerWebSocket.broadcast({ type: 'player_joined', player });
+            ServerWebSockets.broadcast({ type: 'player_joined', player });
 
             ws.on('message', function incoming(message) {
                 console.log(`Incoming message: ` + message);
                 let msg = JSON.parse(message);
                 if (msg.type === 'move') {
-                    let p = ServerPlayersManager.getPlayer(ws.id);
-                    if (!p) return;
-
-                    p.move(msg.data.dir);
-
-                    ServerWebSocket.broadcast({ type: 'update', id: ws.id, x: p.x, y: p.y });
+                    let incomingMsg = new IncomingMessage(ws.id, 'move', msg.data, performance.now());
+                    IncomingMessageQueue.addToMoveCommandQueue(incomingMsg);
                 }
             });
 
             ws.on('close', function () {
                 ServerPlayersManager.removePlayer(ws.id);
-                ServerWebSocket.broadcast({ type: 'player_left', id: ws.id });
+                ServerWebSockets.broadcast({ type: 'player_left', id: ws.id });
             });
         });
     }
 
     static broadcast(data) {
         let json = JSON.stringify(data);
-        ServerWebSocket.wss.clients.forEach(function each(client) {
+        ServerWebSockets.wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(json);
             }

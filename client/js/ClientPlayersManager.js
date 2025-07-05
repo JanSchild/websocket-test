@@ -13,9 +13,8 @@ export class ClientPlayersManager {
     }
 
     static addPlayer(player) {
-        let newPlayerID = player.id;
         let newPlayer = ClientPlayer.fromJSON(player);
-        this.players.set(newPlayerID, newPlayer);
+        this.players.set(newPlayer.id, newPlayer);
     }
 
     static removePlayer(playerID) {
