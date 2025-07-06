@@ -17,8 +17,9 @@ export class ServerWebSockets {
             let y = Math.random() * 400;
             let width = 30;
             let height = 30;
+            let speed = 5;
             let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-            let player = new Player(id, x, y, width, height, color);
+            let player = new Player(id, x, y, width, height, speed, color);
             ServerPlayersManager.addPlayer(player);
             ws.id = id;
 
