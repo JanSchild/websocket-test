@@ -1,6 +1,7 @@
 import { IncomingMessageQueue } from "./IncomingMessageQueue.js";
 import { ServerPlayersManager } from "./ServerPlayersManager.js";
 import { ServerWebSockets } from "./ServerWebSockets.js";
+import { ServerGameWorld } from "./ServerGameWorld.js";
 
 export class ServerGameLoop {
     static TICK_RATE = 60; // 60 updates per second
@@ -26,29 +27,12 @@ export class ServerGameLoop {
             let player = ServerPlayersManager.getPlayer(moveCommand.playerID);
             if (!player) continue;
             let boundsAfterMovement = player.calculateBoundsAfterMovement(moveCommand.data.dir);
-            if (!ServerGameLoop.playerCollidesWithOthers(player.id, boundsAfterMovement)) {
+            if (!ServerGameWorld.playerCollidesWithOthers(player.id, boundsAfterMovement)) {
                 player.x = boundsAfterMovement.x;
                 player.y = boundsAfterMovement.y;
                 ServerWebSockets.broadcast({ type: 'update', data: player.dataForPositionUpdate() });
             }
         }
         IncomingMessageQueue.removeProcessedMoveCommands();
-    }
-
-    static playerCollidesWithOthers(playerID, playerBounds) {
-        let otherPlayers = ServerPlayersManager.getAllPlayersExcept(playerID);
-        for (let otherPlayer of otherPlayers.values()) {
-            if (this.rectsOverlap(playerBounds, otherPlayer.getBounds())) return true;
-        }
-        return false;
-    }
-
-    static rectsOverlap(a, b) {
-        return (
-            a.x < b.x + b.width &&
-            a.x + a.width > b.x &&
-            a.y < b.y + b.height &&
-            a.y + a.height > b.y
-        );
     }
 }
