@@ -1,9 +1,11 @@
+import { ClientGameLoop } from './ClientGameLoop.js';
 import { ClientPlayersManager } from './ClientPlayersManager.js';
 import { ClientWebSocket } from './ClientWebSocket.js';
 
 let canvas = document.getElementById('game');
 let ctx = canvas.getContext('2d');
 
+ClientGameLoop.start(canvas, ctx);
 ClientWebSocket.startNewSocket();
 
 ClientWebSocket.on('message', (event) => {
@@ -37,14 +39,3 @@ document.addEventListener('keydown', function (e) {
         ClientWebSocket.send('move', { dir });
     }
 });
-
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let [id, player] of ClientPlayersManager.players) {
-        let isMyself = ClientPlayersManager.myID == id;
-        player.render(ctx, isMyself);
-    }
-    requestAnimationFrame(gameLoop);
-}
-
-gameLoop();
