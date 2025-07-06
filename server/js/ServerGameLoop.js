@@ -26,7 +26,7 @@ export class ServerGameLoop {
             let player = ServerPlayersManager.getPlayer(moveCommand.playerID);
             if (!player) continue;
             player.move(moveCommand.data.dir);
-            ServerWebSockets.broadcast({ type: 'update', id: player.id, x: player.x, y: player.y });
+            ServerWebSockets.broadcast({ type: 'update', data: player.dataForPositionUpdate() });
         }
         IncomingMessageQueue.removeProcessedMoveCommands();
 

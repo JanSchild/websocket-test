@@ -8,20 +8,21 @@ ClientWebSocket.startNewSocket();
 
 ClientWebSocket.on('message', (event) => {
     let msg = JSON.parse(event.data);
+    if (!msg.data) return;
 
     switch (msg.type) {
         case "init":
-            ClientPlayersManager.myID = msg.id;
-            ClientPlayersManager.loadPlayersFromJSON(msg.players);
+            ClientPlayersManager.myID = msg.data.playerID;
+            ClientPlayersManager.loadPlayersFromJSON(msg.data.players);
             break;
         case "player_joined":
-            ClientPlayersManager.addPlayer(msg.player);
+            ClientPlayersManager.addPlayer(msg.data.player);
             break;
         case "player_left":
-            ClientPlayersManager.removePlayer(msg.id);
+            ClientPlayersManager.removePlayer(msg.data.playerID);
             break;
         case "update":
-            ClientPlayersManager.updatePlayerCoordinates(msg.id, msg.x, msg.y);
+            ClientPlayersManager.updatePlayerCoordinates(msg.data.id, msg.data.x, msg.data.y);
             break;
     }
 })

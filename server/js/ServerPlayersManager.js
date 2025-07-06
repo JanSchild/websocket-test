@@ -16,10 +16,10 @@ export class ServerPlayersManager {
         return this.players.get(playerID);
     }
 
-    static serializedPlayers() {
+    static totalPlayersData() {
         let serializedPlayers = {};
         for (let [id, player] of this.players) {
-            serializedPlayers[id] = player.dataToSend();
+            serializedPlayers[id] = player.dataForFullSync();
         }
         return serializedPlayers;
     }

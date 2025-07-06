@@ -15,16 +15,20 @@ export class ServerWebSockets {
             let id = uuidv4();
             let x = Math.random() * 400;
             let y = Math.random() * 400;
+            let width = 30;
+            let height = 30;
             let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-            let player = new Player(id, x, y, color);
+            let player = new Player(id, x, y, width, height, color);
             ServerPlayersManager.addPlayer(player);
             ws.id = id;
 
             console.log(`Player joined`);
-            ws.send(JSON.stringify({ type: 'init', id, players: ServerPlayersManager.serializedPlayers() }));
+            let initData = { type: 'init', data: { playerID: id, players: ServerPlayersManager.totalPlayersData() } };
+            ws.send(JSON.stringify(initData));
 
             // Notify others of new player
-            ServerWebSockets.broadcast({ type: 'player_joined', player });
+            let playerJoinedData = { type: 'player_joined', data: { player } };
+            ServerWebSockets.broadcast(playerJoinedData);
 
             ws.on('message', function incoming(message) {
                 console.log(`Incoming message: ` + message);
@@ -37,7 +41,8 @@ export class ServerWebSockets {
 
             ws.on('close', function () {
                 ServerPlayersManager.removePlayer(ws.id);
-                ServerWebSockets.broadcast({ type: 'player_left', id: ws.id });
+                let playerLeftData = { type: 'player_left', data: { playerID: ws.id } };
+                ServerWebSockets.broadcast(playerLeftData);
             });
         });
     }

@@ -16,9 +16,6 @@ export class IncomingMessageQueue {
         console.log(`Queue: ` + JSON.stringify(IncomingMessageQueue.moveCommandQueue));
     }
 
-    /**
-     * @returns {IncomingMessage[]}
-     */
     static getMoveCommands() {
         return IncomingMessageQueue.moveCommandQueue;
     }
