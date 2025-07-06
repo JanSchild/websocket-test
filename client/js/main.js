@@ -1,11 +1,13 @@
 import { ClientGameLoop } from './ClientGameLoop.js';
+import { ClientGameRenderer } from './ClientGameRenderer.js';
 import { ClientPlayersManager } from './ClientPlayersManager.js';
 import { ClientWebSocket } from './ClientWebSocket.js';
 
 let canvas = document.getElementById('game');
-let ctx = canvas.getContext('2d');
 
-ClientGameLoop.start(canvas, ctx);
+ClientGameRenderer.initialize(canvas);
+ClientGameLoop.start();
+
 ClientWebSocket.startNewSocket();
 
 ClientWebSocket.on('message', (event) => {

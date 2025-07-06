@@ -1,4 +1,4 @@
-import { ClientPlayersManager } from "./ClientPlayersManager.js";
+import { ClientGameRenderer } from "./ClientGameRenderer.js";
 
 export class ClientGameLoop {
     static isRunning = false;
@@ -18,7 +18,7 @@ export class ClientGameLoop {
 
     static gameLoop() {
         ClientGameLoop.update();
-        ClientGameLoop.render();
+        ClientGameRenderer.render();
         if (ClientGameLoop.isRunning) {
             requestAnimationFrame(ClientGameLoop.gameLoop);
         }
@@ -26,13 +26,5 @@ export class ClientGameLoop {
 
     static update() {
 
-    }
-
-    static render() {
-        ClientGameLoop.context.clearRect(0, 0, ClientGameLoop.canvas.width, ClientGameLoop.canvas.height);
-        for (let [id, player] of ClientPlayersManager.players) {
-            let isMyself = ClientPlayersManager.myID == id;
-            player.render(ClientGameLoop.context, isMyself);
-        }
     }
 }
