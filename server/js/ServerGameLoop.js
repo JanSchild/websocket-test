@@ -20,7 +20,10 @@ export class ServerGameLoop {
         const now = performance.now();
         const deltaTime = (now - ServerGameLoop.lastTimestamp) / 1000;
         ServerGameLoop.lastTimestamp = now;
-        // get move updates
+        ServerGameLoop.processMoveQueue();
+    }
+
+    static processMoveQueue() {
         let moveCommands = IncomingMessageQueue.getMoveCommands();
         for (let moveCommand of moveCommands) {
             moveCommand.processed = true;
