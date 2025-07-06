@@ -17,9 +17,9 @@ export class ClientGameLoop {
     }
 
     static gameLoop() {
-        ClientGameLoop.update();
-        ClientGameRenderer.render();
         if (ClientGameLoop.isRunning) {
+            ClientGameLoop.update();
+            ClientGameRenderer.render();
             requestAnimationFrame(ClientGameLoop.gameLoop);
         }
     }
