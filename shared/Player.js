@@ -50,12 +50,12 @@ export class Player {
         return { x, y };
     }
 
-    rectsOverlap(a, b) {
-        return (
-            a.x < b.x + b.width &&
-            a.x + a.width > b.x &&
-            a.y < b.y + b.height &&
-            a.y + a.height > b.y
-        );
+    calculateBoundsAfterMovement(dir) {
+        let positionAfterMovment = this.calculatePositionAfterMovement(dir);
+        return { x: positionAfterMovment.x, y: positionAfterMovment.y, width: this.width, height: this.height };
+    }
+
+    getBounds() {
+        return { x: this.x, y: this.y, width: this.width, height: this.height };
     }
 }

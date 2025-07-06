@@ -25,17 +25,30 @@ export class ServerGameLoop {
             moveCommand.processed = true;
             let player = ServerPlayersManager.getPlayer(moveCommand.playerID);
             if (!player) continue;
-            player.move(moveCommand.data.dir);
-            ServerWebSockets.broadcast({ type: 'update', data: player.dataForPositionUpdate() });
+            let boundsAfterMovement = player.calculateBoundsAfterMovement(moveCommand.data.dir);
+            if (!ServerGameLoop.playerCollidesWithOthers(player.id, boundsAfterMovement)) {
+                player.x = boundsAfterMovement.x;
+                player.y = boundsAfterMovement.y;
+                ServerWebSockets.broadcast({ type: 'update', data: player.dataForPositionUpdate() });
+            }
         }
         IncomingMessageQueue.removeProcessedMoveCommands();
+    }
 
+    static playerCollidesWithOthers(playerID, playerBounds) {
+        let otherPlayers = ServerPlayersManager.getAllPlayersExcept(playerID);
+        for (let otherPlayer of otherPlayers.values()) {
+            if (this.rectsOverlap(playerBounds, otherPlayer.getBounds())) return true;
+        }
+        return false;
+    }
 
-        // 1. Update player positions (if moving)
-        // 2. Check for collisions
-        // 3. Broadcast updated game state to all clients
-
-        //checkCollisions();
-        //broadcastGameState();
+    static rectsOverlap(a, b) {
+        return (
+            a.x < b.x + b.width &&
+            a.x + a.width > b.x &&
+            a.y < b.y + b.height &&
+            a.y + a.height > b.y
+        );
     }
 }

@@ -23,4 +23,10 @@ export class ServerPlayersManager {
         }
         return serializedPlayers;
     }
+
+    static getAllPlayersExcept(playerID) {
+        return new Map(
+            Array.from(ServerPlayersManager.players.entries()).filter(([id]) => id !== playerID)
+        );
+    }
 }
