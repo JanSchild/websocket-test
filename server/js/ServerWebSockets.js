@@ -16,7 +16,7 @@ export class ServerWebSockets {
             ws.id = player.id;
 
             console.log(`Player joined`);
-            let initMsg = { type: 'init', data: { playerID: id, players: ServerPlayersManager.totalPlayersData() } };
+            let initMsg = { type: 'init', data: { playerID: ws.id, players: ServerPlayersManager.totalPlayersData() } };
             ws.send(JSON.stringify(initMsg));
 
             let playerJoinedMsg = { type: 'player_joined', data: { player } };
