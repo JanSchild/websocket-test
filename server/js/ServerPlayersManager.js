@@ -1,8 +1,21 @@
 import { Player } from "../../shared/Player.js";
+import { v4 as uuidv4 } from 'uuid';
 
 export class ServerPlayersManager {
     /** @type {Map<string, Player>} */
     static players = new Map();
+    
+    static generatePlayer() {
+        let id = uuidv4();
+        let x = Math.random() * 400;
+        let y = Math.random() * 400;
+        let width = 30;
+        let height = 30;
+        let speed = 5;
+        let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        let player = new Player(id, x, y, width, height, speed, color);
+        return player;
+    }
 
     static addPlayer(player) {
         this.players.set(player.id, player);
