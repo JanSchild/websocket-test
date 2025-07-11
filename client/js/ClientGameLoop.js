@@ -2,12 +2,8 @@ import { ClientGameRenderer } from "./ClientGameRenderer.js";
 
 export class ClientGameLoop {
     static isRunning = false;
-    static canvas;
-    static context;
 
-    static start(canvas, context) {
-        ClientGameLoop.canvas = canvas;
-        ClientGameLoop.context = context;
+    static start() {
         ClientGameLoop.isRunning = true;
         ClientGameLoop.gameLoop();
     }
