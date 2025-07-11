@@ -24,12 +24,12 @@ export class ServerWebSockets {
             ws.id = id;
 
             console.log(`Player joined`);
-            let initData = { type: 'init', data: { playerID: id, players: ServerPlayersManager.totalPlayersData() } };
-            ws.send(JSON.stringify(initData));
+            let initMsg = { type: 'init', data: { playerID: id, players: ServerPlayersManager.totalPlayersData() } };
+            ws.send(JSON.stringify(initMsg));
 
             // Notify others of new player
-            let playerJoinedData = { type: 'player_joined', data: { player } };
-            ServerWebSockets.broadcast(playerJoinedData);
+            let playerJoinedMsg = { type: 'player_joined', data: { player } };
+            ServerWebSockets.broadcast(playerJoinedMsg);
 
             ws.on('message', function incoming(message) {
                 console.log(`Incoming message: ` + message);
@@ -42,14 +42,14 @@ export class ServerWebSockets {
 
             ws.on('close', function () {
                 ServerPlayersManager.removePlayer(ws.id);
-                let playerLeftData = { type: 'player_left', data: { playerID: ws.id } };
-                ServerWebSockets.broadcast(playerLeftData);
+                let playerLeftMsg = { type: 'player_left', data: { playerID: ws.id } };
+                ServerWebSockets.broadcast(playerLeftMsg);
             });
         });
     }
 
-    static broadcast(data) {
-        let json = JSON.stringify(data);
+    static broadcast(message) {
+        let json = JSON.stringify(message);
         ServerWebSockets.wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(json);
