@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class ServerPlayersManager {
     /** @type {Map<string, Player>} */
     static players = new Map();
-    
+
     static generatePlayer() {
         let id = uuidv4();
         let x = Math.random() * 400;
@@ -29,7 +29,7 @@ export class ServerPlayersManager {
         return this.players.get(playerID);
     }
 
-    static totalPlayersData() {
+    static allPlayersSyncData() {
         let serializedPlayers = {};
         for (let [id, player] of this.players) {
             serializedPlayers[id] = player.dataForFullSync();
